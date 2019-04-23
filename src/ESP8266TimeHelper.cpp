@@ -1,5 +1,5 @@
 /*
- * ESP8266 Arduino Time Helper v 1.0.0
+ * ESP8266 Internet Time Helper Arduino Library v 1.0.0
  *
  * The MIT License (MIT)
  * Copyright (c) 2019 K. Suwatchai (Mobizt)
