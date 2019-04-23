@@ -75,7 +75,7 @@ int ESP8266TimeHelper::getYear()
 int ESP8266TimeHelper::getMonth()
 {
     setSysTime();
-    return timeinfo.tm_mon;
+    return timeinfo.tm_mon + 1;
 }
 int ESP8266TimeHelper::getDay()
 {
