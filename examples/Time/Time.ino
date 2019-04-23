@@ -26,7 +26,7 @@ void setup()
     Serial.println(WiFi.localIP());
     Serial.println();
 
-    Serial.println("Aquiring time...");
+    Serial.println("Acquiring time...");
     Serial.println();
 
     //Time Zone from GMT
