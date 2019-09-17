@@ -1,5 +1,5 @@
 /*
- * ESP8266 Internet Time Helper Arduino Library v 1.0.0
+ * ESP8266 Internet Time Helper Arduino Library v 1.0.1
  *
  * The MIT License (MIT)
  * Copyright (c) 2019 K. Suwatchai (Mobizt)
@@ -34,12 +34,12 @@ class ESP8266TimeHelper
     ESP8266TimeHelper();
     uint32_t getUnixTime();
     time_t getTimestamp(int year, int mon, int date, int hour, int mins, int sec);
-    void setClock();
+    bool setClock();
     int getYear();
     int getMonth();
     int getDay();
     int getDayOfWeek();
-    char *getDayOfWeekString();
+    String getDayOfWeekString();
     int getHour();
     int getMin();
     int getSec();
@@ -49,16 +49,18 @@ class ESP8266TimeHelper
     int getCurrentSecond();
     uint64_t getCurrentTimestamp();
     void setSysTime();
+    void getTimeFromSec(int secCount, int &yrs, int &months, int &days, int &hr, int &min, int &sec);
 
     time_t now;
     uint64_t msec_time_diff = 0;
     struct tm timeinfo;
     uint8_t TZ = 0;
     uint8_t DST_MN = 0;
+    bool clockReady = false;
 
   private:
     int totalDays(int y, int m, int d);  
-    char *dow[20] = {"sunday", "monday", "tuesday", "wednesday", "thurseday", "friday", "saturday"};
+    const char *dow[20] = {"sunday", "monday", "tuesday", "wednesday", "thurseday", "friday", "saturday"};
 };
 
 #endif

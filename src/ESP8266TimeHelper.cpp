@@ -1,5 +1,5 @@
 /*
- * ESP8266 Internet Time Helper Arduino Library v 1.0.0
+ * ESP8266 Internet Time Helper Arduino Library v 1.0.1
  *
  * The MIT License (MIT)
  * Copyright (c) 2019 K. Suwatchai (Mobizt)
@@ -38,7 +38,7 @@ time_t ESP8266TimeHelper::getTimestamp(int year, int mon, int date, int hour, in
 {
     struct tm timeinfo;
     timeinfo.tm_year = year - 1900;
-    timeinfo.tm_mon = mon;
+    timeinfo.tm_mon = mon -1;
     timeinfo.tm_mday = date;
     timeinfo.tm_hour = hour;
     timeinfo.tm_min = mins;
@@ -47,17 +47,19 @@ time_t ESP8266TimeHelper::getTimestamp(int year, int mon, int date, int hour, in
     return ts;
 }
 
-void ESP8266TimeHelper::setClock()
+bool ESP8266TimeHelper::setClock()
 {
     const char timeServer1[100] = "pool.ntp.org";
     const char timeServer2[100] = "time.nist.gov";
     configTime((TZ)*3600, (DST_MN)*60, timeServer1, timeServer2, NULL);
 
     now = time(nullptr);
-    while (now < 8 * 3600 * 2)
+    int cnt = 0;
+    while (now < 8 * 3600 * 2 && cnt < 20)
     {
         delay(50);
         now = time(nullptr);
+        cnt++;
     }
 
     uint64_t tmp = now;
@@ -65,6 +67,9 @@ void ESP8266TimeHelper::setClock()
     msec_time_diff = tmp - millis();
 
     gmtime_r(&now, &timeinfo);
+
+    clockReady = now > 8 * 3600 * 2;
+    return clockReady;
 }
 
 int ESP8266TimeHelper::getYear()
@@ -88,7 +93,7 @@ int ESP8266TimeHelper::getDayOfWeek()
     setSysTime();
     return timeinfo.tm_wday;
 }
-char *ESP8266TimeHelper::getDayOfWeekString()
+String ESP8266TimeHelper::getDayOfWeekString()
 {
     setSysTime();
     return dow[timeinfo.tm_wday];
@@ -160,4 +165,23 @@ int ESP8266TimeHelper::getCurrentSecond()
 uint64_t ESP8266TimeHelper::getCurrentTimestamp()
 {
     return now;
+}
+void ESP8266TimeHelper::getTimeFromSec(int secCount, int &yrs, int &months, int &days, int &hr, int &min, int &sec)
+{
+    int _yrs = secCount / (365 * 24 * 3600);
+    secCount = secCount - _yrs * (365 * 24 * 3600);
+    yrs = _yrs;
+    int _months = secCount / (30 * 24 * 3600);
+    secCount = secCount - _months * (30 * 24 * 3600);
+    months = _months;
+    int _days = secCount / (24 * 3600);
+    secCount = secCount - _days * (24 * 3600);
+    days = _days;
+    int _hr = secCount / 3600;
+    secCount = secCount - _hr * 3600;
+    hr = _hr;
+    int _min = secCount / 60;
+    secCount = secCount - _min * 60;
+    min = _min;
+    sec = secCount;
 }
